@@ -13,7 +13,7 @@
       shell: |
         qm clone {{ cloud_id }} {{ item_id }} --name k8s-{{ item.role }}-{{ item.id }} --full true
       loop: "{{ vm_configs | from_yaml }}"
-      loop_conrtol:
+      loop_control:
         label: "Cloning VM {{ item.id }} ({{ item.role }})"
 
 
