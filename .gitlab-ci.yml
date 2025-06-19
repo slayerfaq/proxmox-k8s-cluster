@@ -1,0 +1,13 @@
+stages:
+  - provision
+
+provision_k8s_vms:
+  stage: provision
+  image: python:3.11
+  before_script:
+    - apt update && apt install -y ansible sshpass
+  script:
+    - cd ansible
+    - ansible-playbook -i inventory.ini create-vm-k8s.yml
+  only:
+    - main

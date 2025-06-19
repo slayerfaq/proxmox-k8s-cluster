@@ -1,0 +1,33 @@
+#template_path: "/var/lib/vz/template/iso/ubuntu-24.04.1-live-server-amd64.iso"
+
+admin_password: "fear228141"
+
+base_ip: 10.10.0.65
+cloud_id: 9000
+network_gate: 10.10.0.1
+net_mask: 24
+count: 1
+start_id: 110
+
+#new_container_configs with dynamic create ip and VMID
+vm_configs: |
+          {% set ip_parts = base_ip.split('.') %}
+          {% set start_host = ip_parts[-1] | int %}
+          [
+          {% for i in range(count) %}
+            {
+              "id": {{ start_id + i }},
+              "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}"
+            }{% if not loop.last %},{% endif %}
+          {% endfor %}
+          ]
+
+
+#vm_hardware: |
+#         - memory 2048
+#         - cores 1
+#         - net0 virtio,bridge=vmbr0
+#         - agent enabled=1
+
+#vm_disk: |
+#         - scsihw

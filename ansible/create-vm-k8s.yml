@@ -1,0 +1,42 @@
+---
+- name: create vm from init iso
+  hosts: proxmox_node
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../configurations-qm-v2.yml
+  
+
+  tasks:
+    - name: cloning cloud-init iso
+      shell: |
+        qm clone {{ cloud_id }} {{ item_id }} --name k8s-{{ item.role }}-{{ item.id }} --full true
+      loop: "{{ vm_configs | from_yaml }}"
+      loop_conrtol:
+        label: "Cloning VM {{ item.id }} ({{ item.role }})"
+
+
+    - name: configuration network
+      shell: |
+        qm set {{ item.id }} \
+          --ipconfig0 ip={{ item.ip }}/{{ net_mask }},gw={{ network_gate }} \
+          --ciuser root
+          #--sshkeys /root/.ssh/id_rsa.pub
+
+      loop: "{{ vm_configs | form_yaml }}"
+
+    - name: copying user-data template
+      template:
+        src: templates/user-data.j2
+        dest: "/var/lib/vz/snippets/user-data-{{ item.id }}.yaml"
+      loop: "{{ vm_configs | from_yaml }}"
+
+    - name: entering custom user-data
+      shell: |
+        qm set {{ item.id }} --cicustom "user=local:snippets/user-data-{{ item.id }}.yaml"
+      loop: "{{ vm_configs | from_yaml }}"
+
+    - name: start vm
+      shell: qm start {{ item.id }}
+      loop: "vm_configs | from_yaml }}"
