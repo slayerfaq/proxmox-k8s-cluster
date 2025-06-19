@@ -19,7 +19,10 @@ vm_configs: |
             {
               "id": {{ start_id + i }},
               "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}",
+<<<<<<< HEAD
               "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}"
+=======
+>>>>>>> e3abc5d (update config)
               "roles": "{{ roles[i] }}"
             }{% if not loop.last %},{% endif %}
           {% endfor %}
