@@ -5,7 +5,7 @@
   gather_facts: false
 
   vars_files:
-    - ../configurations-qm-v2.yml
+    - ../configuration-qm-v2.yml
   
 
   tasks:
@@ -24,7 +24,7 @@
           --ciuser root
           #--sshkeys /root/.ssh/id_rsa.pub
 
-      loop: "{{ vm_configs | form_yaml }}"
+      loop: "{{ vm_configs | from_yaml }}"
 
     - name: copying user-data template
       template:
@@ -39,4 +39,4 @@
 
     - name: start vm
       shell: qm start {{ item.id }}
-      loop: "vm_configs | from_yaml }}"
+      loop: "{{ vm_configs | from_yaml }}"
