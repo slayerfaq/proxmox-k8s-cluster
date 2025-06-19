@@ -8,6 +8,6 @@ provision_k8s_vms:
     - apt update && apt install -y ansible sshpass
   script:
     - cd ansible
-    - ansible-playbook -i create-vm-k8s.yml
+    - ansible-playbook proxmox_node create-vm-k8s.yml
   only:
     - main
