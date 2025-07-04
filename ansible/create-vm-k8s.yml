@@ -7,7 +7,9 @@
   vars_files:
     - ../configuration-qm-v2.yml
   
-
+  tasks: 
+    - name: Ping Proxmox
+      ping:
   tasks:
     - name: cloning cloud-init iso
       shell: |
