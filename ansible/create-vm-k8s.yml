@@ -1,6 +1,6 @@
 ---
 - name: create vm from init iso
-  hosts: proxmox_node
+  hosts: proxmox
   become: true
   gather_facts: false
 
