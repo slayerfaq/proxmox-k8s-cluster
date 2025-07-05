@@ -5,7 +5,7 @@
   gather_facts: false
 
   vars_files:
-    - ../configuration-qm-v2.yml
+   - ../configuration-qm-v2.yml
   
   tasks: 
     - name: Generate Configs
@@ -28,7 +28,7 @@
   tasks:
     - name: cloning cloud-init iso
       shell: |
-        qm clone {{ cloud_id }} {{ item_id }} --name k8s-{{ item.role }}-{{ item.id }} --full true
+        qm clone {{ cloud_id }} {{ item.id }} --name k8s-{{ item.role }}-{{ item.id }} --full true
       loop: "{{ vm_configs | from_yaml }}"
       loop_control:
         label: "Cloning VM {{ item.id }} ({{ item.role }})"
@@ -45,7 +45,7 @@
 
     - name: copying user-data template
       template:
-        src: templates/user-data.j2
+        src: template/user-data.j2
         dest: "/var/lib/vz/snippets/user-data-{{ item.id }}.yaml"
       loop: "{{ vm_configs | from_yaml }}"
 
