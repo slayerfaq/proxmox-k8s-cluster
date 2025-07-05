@@ -1,0 +1,85 @@
+---
+- name: create vm from init iso
+  hosts: proxmox_node
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../configuration-qm-v2.yml
+
+  pre_tasks:
+    - name: Generate properties
+      set_fact:
+        vm_configs: |
+          {% set list = [] %}
+          {% for i in range(count) %}
+          {% set _ = list.append({
+             'id': start_id + i,
+              'ip': base_ip.split('.')[:-1] | join('.') ~ '.' ~ (base_ip.split('.')[-1] | int + i),
+              'role': ['master', 'worker', 'worker'][i]
+          }) %}
+          {% endfor %}
+          {{ list }}
+
+    - name: Debug vm_configs
+      debug:
+        var: vm_configs
+
+  tasks:
+    - name: Создание и запуск ВМ
+      block:
+
+        - name: Клонирование образа
+          shell: qm clone {{ cloud_id }} {{ item.id }} --name k8s-{{ item.role }}-{{ item.id }} --full true
+          loop: "{{ vm_configs }}"
+
+        - name: Сетевые настройки
+          shell: qm set {{ item.id }} --ipconfig0 ip={{ item.ip }}/{{ net_mask }},gw={{ network_gate }} --ciuser root
+          loop: "{{ vm_configs }}"
+
+        - name: Генерация user-data YAML-файлов из шаблона
+          template:
+            src: template/user-data.j2
+            dest: "/var/lib/vz/snippets/user-data-{{ item.id }}.yaml"
+          loop: "{{ vm_configs }}"
+
+
+        - name: проверка на существование шаблона user-data
+          stat:
+            path: "/var/lib/vz/snippets/user-data-{{ item.id }}.yaml"
+          loop: "{{ vm_configs }}"
+          register: snippet_files
+
+        - name: Debug
+          debug:
+            msg: "Файл отсутствует для ID {{ item.item.id }}"
+          loop: "{{ snippet_files.results }}" #это список результатов stat,
+                                              #каждый элемент содержит - оригинальный item
+                                              #и .stat.exists булево значение, существует ли файл
+          when: not item.stat.exists
+
+        - name: Присвоение custom user-data
+          shell: qm set {{ item.id }} --cicustom "user=local:snippets/user-data-{{ item.id }}.yaml"
+          loop: "{{ vm_configs }}"
+
+        - name: Старт ВМ
+          shell: qm start {{ item.id }}
+          loop: "{{ vm_configs }}"
+
+      rescue:
+        - name: Удаление ВМ при ошибке
+          shell: qm destroy {{ item.id }}
+          loop: "{{ vm_configs }}"
+          ignore_errors: true
+
+      always:
+        - name: Информирование о завершении
+          debug:
+            msg: "Блок создания завершён (успешно или с ошибкой)"
+
+    # вне блока: user-data можно делать как до, так и после
+    - name: Копирование user-data
+      template:
+        src: template/user-data.j2
+        dest: "/var/lib/vz/snippets/user-data-{{ item.id }}.yaml"
+      loop: "{{ vm_configs }}"
