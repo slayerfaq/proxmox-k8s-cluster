@@ -10,20 +10,20 @@ count: 3
 start_id: 1100
 
 #new_container_configs with dynamic create ip and VMID
-vm_configs: |
-          {% set ip_parts = base_ip.split('.') %}
-          {% set start_host = ip_parts[-1] | int %}
-          {% set roles = ['master', 'worker', 'worker'] %}
-          [
-          {% for i in range(count) %}
-            {
-              "id": {{ start_id + i }},
-              "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}",
-              "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}"
-              "roles": "{{ roles[i] }}"
-            }{% if not loop.last %},{% endif %}
-          {% endfor %}
-          ]
+#vm_configs: |
+#          {% set ip_parts = base_ip.split('.') %}
+#          {% set start_host = ip_parts[-1] | int %}
+#          {% set roles = ['master', 'worker', 'worker'] %}
+#          [
+#          {% for i in range(count) %}
+#            {
+#              "id": {{ start_id + i }},
+#              "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}",
+#              "ip": "{{ ip_parts[0] }}.{{ ip_parts[1] }}.{{ ip_parts[2] }}.{{ start_host + i }}"
+#              "roles": "{{ roles[i] }}"
+#            }{% if not loop.last %},{% endif %}
+#          {% endfor %}
+#          ]
 
 
 #vm_hardware: |
