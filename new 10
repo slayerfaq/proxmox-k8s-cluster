@@ -1,5 +1,5 @@
 ---
-- name: create vm from init iso
+- name: Создание хостов на основе cloud-init образа
   hosts: proxmox_node
   become: true
   gather_facts: false
@@ -8,7 +8,7 @@
     - ../configuration-qm-v2.yml
 
   pre_tasks:
-    - name: Generate properties
+    - name: Генерация id и ip
       set_fact:
         vm_configs: |
           {% set list = [] %}
@@ -73,7 +73,7 @@
           ignore_errors: true
 
       always:
-        - name: Информирование о завершении
+        - name: Информирование о завершение
           debug:
             msg: "Блок создания завершён (успешно или с ошибкой)"
 
