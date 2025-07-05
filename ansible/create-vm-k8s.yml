@@ -8,6 +8,21 @@
     - ../configuration-qm-v2.yml
   
   tasks: 
+    - name: Generate Configs
+      set_facts:
+        vm_configs: >-
+          {{
+            [ {
+              "id": start_id + i,
+              "ip": base_ip.split('.')[:-1] | join('.') ~ '.' ~ (base_ip.split('.')[-1] | int + i),
+              "roles": ['master', 'worker', 'worker'][i]  # или подставляй динамически
+            } for i in range(count) ]
+          }}
+
+    - name: Debug
+      debug:
+        var: vm_configs
+
     - name: Ping Proxmox
       ping:
   tasks:
