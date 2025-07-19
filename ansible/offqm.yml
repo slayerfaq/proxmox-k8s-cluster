@@ -1,0 +1,16 @@
+---
+- name: Power off and destroy VMs
+  hosts: <group>
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Power off and destroy VMs
+      shell: |
+        qm shutdown <vmid>
+        qm shutdown <vmid>
+        sleep 5
+        qm destroy <vmid>
+        qm destroy <vmid>
+      args:
+        executable: /bin/bash
