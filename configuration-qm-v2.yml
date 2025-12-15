@@ -1,6 +1,6 @@
 #template_path: "/var/lib/vz/template/iso/ubuntu-24.04.1-live-server-amd64.iso"
 
-admin_password: "fear228141"
+admin_password: "superpass"
 
 base_ip: x.x.x.x
 cloud_id: 9000
