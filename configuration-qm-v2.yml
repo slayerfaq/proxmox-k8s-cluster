@@ -2,9 +2,9 @@
 
 admin_password: "fear228141"
 
-base_ip: 10.10.0.65
+base_ip: x.x.x.x
 cloud_id: 9000
-network_gate: 10.10.0.1
+network_gate: 10.10.0.0
 net_mask: 24
 count: 3
 start_id: 1100
